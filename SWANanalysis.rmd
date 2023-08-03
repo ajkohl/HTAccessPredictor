@@ -1,0 +1,107 @@
+```{r, echo = FALSE}
+library(readr)
+library(dplyr)
+library(leaps)
+library(corrplot)
+library(car)
+
+data <- read_tsv('/Users/aj/Downloads/32961-0001-Data.tsv', show_col_types = FALSE)
+```
+```{r}
+head(data)
+```
+
+
+```{r}
+df <- data.frame(data$RACE, data$STATUS10, data$AGE10, data$LANGINT10, data$INSURAN10, data$NOTAFFR10, data$INCOME10, data$HOTFLAS10, #predictors
+                 
+                 #combine below into single access metric
+                 data$ESTROG110, # estrogen pills
+                 data$ESTRNJ110, #estrogen injections
+                 data$COMBIN110, #estrogen/ progestin combo
+                 data$OHRM_110
+)
+                 
+# Add reason for taking!
+
+df <- df %>% 
+  rename("Race" = "data.RACE"
+         , "MenoStatus" = "data.STATUS10"
+         , "Age" = "data.AGE10"
+         , "Language" = "data.LANGINT10"
+         
+         , "Estr110" = "data.ESTROG110" # Estrogen since last visit?
+         , "EstrInjec110" = "data.ESTRNJ110"
+         , "EstrProgComb110" = "data.COMBIN110"
+         , "OtherHormone1" = "data.OHRM_110"
+         )
+# Filter rows where values are not negative
+df <- df %>%
+  filter(data.INCOME10 > 0)
+```
+
+```{r}
+#recode race
+df$Race[df$Race == 1] <- "Black/African American"
+df$Race[df$Race == 2] <- "Chinese/Chinese American"
+df$Race[df$Race == 3] <- "Japanese/Japanese American"
+df$Race[df$Race == 4] <-"Caucasian/ White Non-Hispanic"
+df$Race[df$Race == 5] <-"Hispanic"
+
+# recode MenoStatus
+df$MenoStatus[df$MenoStatus == 1] <- "Post by BSO"
+df$MenoStatus[df$MenoStatus == 2] <- "Natural Post"
+df$MenoStatus[df$MenoStatus == 3] <- "Late Peri"
+df$MenoStatus[df$MenoStatus == 4] <- "Early Peri"
+df$MenoStatus[df$MenoStatus == 5] <- "Pre"
+df$MenoStatus[df$MenoStatus == 6] <- "Pregnant/breastfeeding"
+df$MenoStatus[df$MenoStatus == 7] <- "Unknown due to HT use"
+df$MenoStatus[df$MenoStatus == 8] <- "Unknown due to hysterectomy"
+
+#recode language
+df$Language[df$Language == 1] <- "English"
+df$Language[df$Language == 2] <- "Spanish"
+df$Language[df$Language == 3] <- "Cantonese"
+df$Language[df$Language == 4] <- "Japanese"
+
+df <- na.omit(df)
+```
+
+```{r}
+# Convert to Boolean
+df <- data.frame(lapply(df, function(x) ifelse(x == c(1, -1, -7, -8, -9), FALSE, x)))
+df <- data.frame(lapply(df, function(x) ifelse(x == 2, TRUE, x)))
+logcols <- c("Estr110", "EstrInjec110", "EstrProgComb110", "OtherHormone1")
+df[, logcols] <- lapply(df[, logcols], as.logical)
+
+# Combined Access Score
+df$RecCare = apply(df[, logcols], 1, any)
+
+# Helpful table: one estrogen access metric by race.
+table(df$Estr110, df$Race)
+```
+```{r}
+#Simplified dataframe
+keepcols <- c("Race", "MenoStatus", "Age", "Language", "RecCare")
+df2 <- subset(df, select = keepcols)
+head(df2)
+
+#Least subsets regression
+model <- lm(RecCare ~ ., data = df2)
+#coefficients
+coef(model)
+#p-vals
+summary(model)$coefficients[, "Pr(>|t|)"]
+
+myResPlots2(model, "RecCare")
+
+# Notes:
+# It looks like being white is the most important predictor; Arjan's model should serve to clarify this and get predicted access score.
+```
+
+
+```{r}
+#write file
+write.csv(df, "/Users/aj/Downloads/yale-main/SWAN_prelim72.csv")
+dim(df)
+```
