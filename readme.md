@@ -39,6 +39,8 @@ The project is implemented in Python using the following libraries:
 
 ## Models
 
-The models are built using Scikit-learn's `RandomForestClassifier`. The predictor variables are preprocessed using a combination of standard scaling (for numeric variables) and one-hot encoding (for categorical variables).
+The models are built using Scikit-learn's `RandomForestClassifier` and 'support vector classifiers' after hyperparameter optimization. The predictor variables are preprocessed using a combination of standard scaling (for numeric variables) and one-hot encoding (for categorical variables).
 
 Each model is evaluated on a held-out test set, and the performance is reported in terms of accuracy and the classification report, which includes precision, recall, f-score, and support.
+
+the models attained accuracies of near 80% in predicting access.
