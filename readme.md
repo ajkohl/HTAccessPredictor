@@ -1,8 +1,8 @@
 # Predictive Modeling on SWAN Data
 
-This repository contains predictive models built on the Study of Women's Health Across the Nation (SWAN) dataset. The models aim to predict access to treatment based on a set of predictor variables.
+### This repository contains predictive models built on the Study of Women's Health Across the Nation (SWAN) dataset. The models aim to predict access to treatment based on a set of predictor variables. In addition, it includes the deployment code to port the trained models to the wiki site and implment them in a web form.
 
-## Note: swandata.csv contained preprocessing errors that we made and thus the first half of the jupyter notebook analysis was also on this invalidly processed data. Swannew was processed properly and includes economic predictors and information on severity such that we can normalize by severity of illness. The new models are on the lower half of the notebook
+Note: swandata.csv contained preprocessing errors. Swannew was processed properly and includes economic predictors and information on severity such that we can normalize by severity of illness. The new models are on the lower half of the notebook
 
 ## Table of Contents
 1. [General Info](#general-info)
