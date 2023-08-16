@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+  
+{% block title %}Modeling{% endblock %}
+
+{% block page_content %}
+
+<div class="row mt-4">
+  <div class="col-lg-8">
+    <h2>Flux Balance Analysis and Machine Learning to study HRT Access</h2>
+    <hr>
+    <h2>Enter details to see HRT accessibility prediction:</h2>
+
+    <form action="/modeling" method="post">
+      Race: 
+      <select name="Race">
+          <option value="Japanese/Japanese American">Japanese/Japanese American</option>
+          <!-- Add other races as options here -->
+      </select>
+      <br><br>
+      
+      Menopause Status: 
+      <select name="MenoStatus">
+          <option value="Natural Post">Natural Post</option>
+          <!-- Add other statuses as options here -->
+      </select>
+      <br><br>
+      
+      Age: <input type="number" name="Age"><br><br>
+      
+      Language: 
+      <select name="Language">
+          <option value="English">English</option>
+          <!-- Add other languages as options here -->
+      </select>
+      <br><br>
+      
+      Insurance: <input type="number" name="data.INSURAN10"><br><br>
+      Affordibility: <input type="number" name="data.NOTAFFR10"><br><br>
+      Income: <input type="number" name="data.INCOME10"><br><br>
+      Hot Flashes: <input type="number" name="data.HOTFLAS10"><br><br>
+      
+      <input type="submit" value="Predict">
+  </form>
+
+  {% if predictions %}
+      <h2>Predictions</h2>
+      {% for target, prediction in predictions.items() %}
+          <p><b>{{ target }}</b>: {{ prediction }}</p>
+      {% endfor %}
+  {% endif %}
+    
+  </div>
+  <div class="col-lg-4">
+    <h2>References</h2>
+    <hr>
+    <p>iGEM teams are encouraged to record references you use during the course of your research. They should be posted somewhere on your wiki so that judges and other visitors can see how you thought about your project and what works inspired you.</p>
+  </div>
+</div>
+
+{% endblock %}
